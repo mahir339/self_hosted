@@ -5,15 +5,19 @@ on:
   workflow_dispatch:
 
 jobs:
-  checkout-code:
+  build-docker-image:
     runs-on: self-hosted
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Display repository files
-        run: |
-          echo "Repository code checked out successfully"
-          ls -la
- 
+      - name: Verify Docker
+        run: sudo docker --version
+
+      - name: Build Docker image
+        run: sudo docker build -t self_hosted_app:latest .
+
+      - name: List Docker image
+        run: sudo docker images self_hosted_app
+
