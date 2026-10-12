@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-docker-image:
+  build-and-publish-artifact:
     runs-on: self-hosted
 
     steps:
@@ -13,11 +13,30 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Verify Docker
-        run: sudo docker --version
+        run: docker --version
 
       - name: Build Docker image
-        run: sudo docker build -t self_hosted_app:latest .
+        run: docker build -t self_hosted_app:latest .
 
-      - name: List Docker image
-        run: sudo docker images self_hosted_app
+      - name: Create artifact folder
+        run: mkdir -p artifact
+
+      - name: Save Docker image as TAR
+        run: docker save self_hosted_app:latest -o artifact/self_hosted_app.tar
+
+      - name: Create ZIP file
+        run: |
+          if ! command -v zip >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y zip
+          fi
+          zip -j artifact/self_hosted_app.zip artifact/self_hosted_app.tar
+
+      - name: Upload ZIP as GitHub Actions artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: self-hosted-docker-image
+          path: artifact/self_hosted_app.zip
+          if-no-files-found: error
+          retention-days: 7
 
