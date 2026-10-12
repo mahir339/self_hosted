@@ -1,0 +1,7 @@
+actions-runner/
+.git/
+.github/
+artifacts/
+*.tar
+*.zip
+

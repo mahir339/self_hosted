@@ -1,0 +1,19 @@
+
+name: Self-Hosted Runner CI
+
+on:
+  workflow_dispatch:
+
+jobs:
+  checkout-code:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Display repository files
+        run: |
+          echo "Repository code checked out successfully"
+          ls -la
+ 
